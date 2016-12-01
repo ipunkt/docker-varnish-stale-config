@@ -27,7 +27,7 @@ sub vcl_hit {
 			|| req.http.User-Agent ~ "Baidu"
 			|| req.http.User-Agent ~ "Clapp/Mobile Kaufland"
 		) {
-		return (pipe);
+		return (pass);
 
 	}
 
