@@ -19,7 +19,6 @@ sub vcl_backend_response {
     #
     # Here you clean the response headers, removing silly Set-Cookie headers
     # and other mistakes your backend does.
-    unset beresp.http.Cache-Control;
 }
 
 sub vcl_deliver {
@@ -33,4 +32,8 @@ sub vcl_deliver {
         } else {
                 set resp.http.X-Cache = "MISS";
         }
+}
+
+sub vcl_hash {
+    hash_data(req.http.method);
 }
