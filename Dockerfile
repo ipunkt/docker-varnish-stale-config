@@ -6,9 +6,10 @@ ENV SERVICE_NAME=varnish \
     SERVICE_GROUP=varnish \
     SERVICE_GID=10001 \
 	 SERVICE_ARCHIVE=/opt/varnish-rancher-tools.tgz 
+VOLUME ${SERVICE_VOLUME}
 
 
 COPY root /
 
 RUN cd ${SERVICE_VOLUME} && \
-tar czvf ${SERVICE_ARCHIVE} * ; rm -rf ${SERVICE_VOLUME}/* 
+	tar czvf ${SERVICE_ARCHIVE} * ; rm -rf ${SERVICE_VOLUME}/* 
