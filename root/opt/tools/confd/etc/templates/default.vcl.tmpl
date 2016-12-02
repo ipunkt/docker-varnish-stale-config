@@ -20,7 +20,7 @@ sub vcl_init {
 
 {{- range $linked_service, $link_name := ls "/self/services/links" -}}
 	{{- $link := (split $linked_service "/") -}}
-	{{- $ips := lookupIP $link_name -}}
+	{{- $ips := (lookupIP $link_name) -}}
 
 		vdir.add_backend({{- printf "backend-%s-%s" $link_name $ip -}}));
 	{{- end -}}
