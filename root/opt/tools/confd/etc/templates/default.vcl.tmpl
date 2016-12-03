@@ -3,12 +3,10 @@ import directors;
 
 
 {{- range $linked_service, $link_name := ls "/self/services/links" -}}
-	{{- $link := (split $linked_service "/") -}}
-	{{- $ips := lookupIP $link_name -}}
 
-	{{- range $ip := $ips -}}
-		backend {{- printf "backend-%s-%s" $link_name $ip -}} {
-			.host = ip("backend", "");
+	{{- range $i, $ip := lookupIP $link_name -}}
+		backend {{- printf "backend-%s-%s" $link_name $i -}} {
+			.host = "{{ $ip }}";
 			.port = "80";
 		}
 	{{- end -}}
@@ -19,10 +17,9 @@ sub vcl_init {
     new vdir = directors.round_robin();
 
 {{- range $linked_service, $link_name := ls "/self/services/links" -}}
-	{{- $link := (split $linked_service "/") -}}
-	{{- $ips := (lookupIP $link_name) -}}
 
-		vdir.add_backend({{- printf "backend-%s-%s" $link_name $ip -}}));
+	{{- range $i, $ip := lookupIP $link_name -}}
+		vdir.add_backend({{- printf "backend-%s-%s" $link_name $i -}}));
 	{{- end -}}
 
 {{- end -}}
