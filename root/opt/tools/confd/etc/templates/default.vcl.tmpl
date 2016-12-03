@@ -2,27 +2,27 @@ vcl 4.0;
 import directors;
 
 
-{{- range $linked_service, $link_name := ls "/self/services/links" -}}
+{{ range $linked_service, $link_name := ls "/self/services/links" }}
 
-	{{- range $i, $ip := lookupIP $link_name -}}
-		backend {{- printf "backend-%s-%s" $link_name $i -}} {
+	{{ range $i, $ip := lookupIP $link_name }}
+		backend {{ printf "backend-%s-%s" $link_name $i }} {
 			.host = "{{ $ip }}";
 			.port = "80";
 		}
-	{{- end -}}
+	{{ end }}
 
-{{- end -}}
+{{ end }}
 
 sub vcl_init {
     new vdir = directors.round_robin();
 
-{{- range $linked_service, $link_name := ls "/self/services/links" -}}
+{{ range $linked_service, $link_name := ls "/self/services/links" }}
 
-	{{- range $i, $ip := lookupIP $link_name -}}
-		vdir.add_backend({{- printf "backend-%s-%s" $link_name $i -}}));
-	{{- end -}}
+	{{ range $i, $ip := lookupIP $link_name }}
+		vdir.add_backend({{ printf "backend-%s-%s" $link_name $i }}));
+	{{ end }}
 
-{{- end -}}
+{{ end }}
 }
 
 # Customised 'vcl_hit'.
