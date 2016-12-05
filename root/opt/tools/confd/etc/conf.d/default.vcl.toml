@@ -6,6 +6,6 @@ mode = "0644"
 reload_cmd = "varnish_reload_vcl"
 keys = [
   "/self/service/links",
-  "/services",
+  "/stacks",
 ]
 
