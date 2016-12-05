@@ -5,69 +5,6 @@ import directors;
 	{{ printf "%s" $linked_service }}
 {{- end -}}
 
-{{- range $linked_service := ls "/self/service/linkss" -}}
-	{{- $link := (split $linked_service "/") -}}
-	{{- $stack_name := index $link 0 -}}
-	{{- $service_name := index $link 1 -}}
-
-	stack_name: {{ $stack_name }}
-	service_name: {{ $service_name }}
-	link_name: {{ $link_name }}
-	link_url: {{ printf "/self/service/links/%s%%2f%s" $stack_name $service_name }}
-	services_url: {{ printf "/stacks/%s/services/%s" $stack_name $service_name  }}
-
-	{{- range $stackName := ls (printf "/stacks/%s/services/%s" $stack_name $service_name ) -}}
-		{{- $service_kind := getv (printf "/stacks/%s/services/%s/kind" $stack_name $service_name) -}}
-
-		{{- if eq $service_kind "service" -}}
-			{{- range $i2, $container := ls (printf "/stacks/%s/services/%s/containers" $stack_name $service_name) -}}
-				backend {{- printf "backend-%s-%s" $link_name $i2 -}} {
-					.host = "{{getv (printf "/stacks/%s/services/%s/containers/%s/primary_ip" $stack_name $service_name $container) -}}";
-					.port = "80";
-				}
-			{{- end -}}
-		{{- end -}}
-
-		{{- if eq $service_kind "externalService" -}}
-			{{- range $i2, $external_ip := ls (printf "/stacks/%s/services/%s/external_ips" $stack_name $service_name) }}
-				backend {{- printf "backend-%s-%s" $link_name $i2 -}} {
-					.host = "{{getv (printf "/stacks/%s/services/%s/external_ips/%s" $stack_name $service_name $external_ip)}}";
-					.port = "80";
-				}
-			{{- end -}}
-		{{- end -}}
-
-	{{- end -}}
-
-{{ end }}
-
-sub vcl_init {
-    new vdir = directors.round_robin();
-
-{{- range $linked_service := ls "/self/service/linkss" -}}
-	{{- $link := (split $linked_service "/") -}}
-	{{- $stack_name := index $link 0 -}}
-	{{- $service_name := index $link 1 -}}
-
-	{{- range $stackName := ls (printf "/stacks/%s/services/%s" $stack_name $service_name ) -}}
-		{{- $service_kind := getv (printf "/stacks/%s/services/%s/kind" $stack_name $service_name) -}}
-
-		{{- if eq $service_kind "service" -}}
-			{{- range $i2, $container := ls (printf "/stacks/%s/services/%s/containers" $stack_name $service_name) -}}
-				vdir.add_backend("{{- printf "backend-%s-%s" $link_name $i2 -}}");
-			{{- end -}}
-		{{- end -}}
-
-		{{- if eq $service_kind "externalService" -}}
-			{{- range $i2, $external_ip := ls (printf "/stacks/%s/services/%s/external_ips" $stack_name $service_name) }}
-				vdir.add_backend("{{- printf "backend-%s-%s" $link_name $i2 -}}");
-			{{- end -}}
-		{{- end -}}
-
-	{{- end -}}
-
-{{ end }}
-}
 
 # Customised 'vcl_hit'.
 sub vcl_hit {
