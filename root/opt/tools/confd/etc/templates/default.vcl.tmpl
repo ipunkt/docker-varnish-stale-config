@@ -4,13 +4,30 @@ import directors;
 
 {{- range $linked_service, $link_name := ls "/self/services/links" -}}
 	{{- $link := (split $linked_service "/") -}}
-	{{- $ips := lookupIP $link_name -}}
+	{{- $stack_name := index $link 0 -}}
+	{{- $service_name := index $link 1 -}}
 
-	{{- range $ip := $ips -}}
-		backend {{- printf "backend-%s-%s" $link_name $ip -}} {
-			.host = ip("backend", "");
-			.port = "80";
-		}
+	{{- range $stackName := ls (printf "/stacks/%s/services/%s" $stack_name $service_name ) -}}
+		{{- $service_kind := getv (printf "/stacks/%s/services/%s/kind" $stack_name $service_name) -}}
+
+		{{- if eq $service_kind "service" -}}
+			{{- range $i2, $container := ls (printf "/stacks/%s/services/%s/containers" $stack_name $service_name) -}}
+				backend {{- printf "backend-%s-%s" $link_name $i2 -}} {
+					.host = "{{getv (printf "/stacks/%s/services/%s/containers/%s/primary_ip" $stack_name $service_name $container) -}}";
+					.port = "80";
+				}
+			{{- end -}}
+		{{- end -}}
+
+		{{- if eq $service_kind "externalService" -}}
+			{{- range $i2, $external_ip := ls (printf "/stacks/%s/services/%s/external_ips" $stack_name $service_name) }}
+				backend {{- printf "backend-%s-%s" $link_name $i2 -}} {
+					.host = "{{getv (printf "/stacks/%s/services/%s/external_ips/%s" $stack_name $service_name $external_ip}}";
+					.port = "80";
+				}
+			{{- end -}}
+		{{- end -}}
+
 	{{- end -}}
 
 {{- end -}}

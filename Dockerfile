@@ -10,6 +10,5 @@ VOLUME ${SERVICE_VOLUME}
 
 
 COPY root /
-
 RUN cd ${SERVICE_VOLUME} && \
 	tar czvf ${SERVICE_ARCHIVE} * ; rm -rf ${SERVICE_VOLUME}/* 
