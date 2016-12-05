@@ -6,11 +6,11 @@ import directors;
 	{{- $stack_name := index $link 0 -}}
 	{{- $service_name := index $link 1 -}}
 	{{- $link_name := getv (printf "/self/service/links/%s%%2f%s" $stack_name $service_name) -}}
-	stack_name: {{- $stack_name -}}
-	service_name: {{- $service_name -}}
-	link_name: {{- $link_name -}}
-	link_url: {{- printf "/self/service/links/%s%%2f%s" $stack_name $service_name -}}
-	services_url: {{- printf "/stacks/%s/services/%s" $stack_name $service_name  -}}
+	stack_name: {{ $stack_name }}
+	service_name: {{ $service_name }}
+	link_name: {{ $link_name }}
+	link_url: {{ printf "/self/service/links/%s%%2f%s" $stack_name $service_name }}
+	services_url: {{ printf "/stacks/%s/services/%s" $stack_name $service_name  }}
 
 	{{- range $stackName := ls (printf "/stacks/%s/services/%s" $stack_name $service_name ) -}}
 		{{- $service_kind := getv (printf "/stacks/%s/services/%s/kind" $stack_name $service_name) -}}
