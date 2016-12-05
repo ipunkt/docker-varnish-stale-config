@@ -1,10 +1,11 @@
 vcl 4.0;
 import directors;
 
-{{- range $linked_service, $link_name := ls "/self/services/links" -}}
+{{- range $linked_service := ls "/self/service/links" -}}
 	{{- $link := (split $linked_service "/") -}}
 	{{- $stack_name := index $link 0 -}}
 	{{- $service_name := index $link 1 -}}
+	{{- $link_name := getv (printf "/self/service/links/%s%%2f%s" $stack_name $service_name) -}}
 
 	{{- range $stackName := ls (printf "/stacks/%s/services/%s" $stack_name $service_name ) -}}
 		{{- $service_kind := getv (printf "/stacks/%s/services/%s/kind" $stack_name $service_name) -}}
@@ -34,10 +35,11 @@ import directors;
 sub vcl_init {
     new vdir = directors.round_robin();
 
-{{- range $linked_service, $link_name := ls "/self/services/links" -}}
+{{- range $linked_service := ls "/self/service/links" -}}
 	{{- $link := (split $linked_service "/") -}}
 	{{- $stack_name := index $link 0 -}}
 	{{- $service_name := index $link 1 -}}
+	{{- $link_name := getv (printf "/self/service/links/%s%%2f%s" $stack_name $service_name) -}}
 
 	{{- range $stackName := ls (printf "/stacks/%s/services/%s" $stack_name $service_name ) -}}
 		{{- $service_kind := getv (printf "/stacks/%s/services/%s/kind" $stack_name $service_name) -}}
