@@ -21,7 +21,7 @@ import directors;
 		{{- if eq $service_kind "externalService" -}}
 			{{- range $i2, $external_ip := ls (printf "/stacks/%s/services/%s/external_ips" $stack_name $service_name) }}
 				backend {{- printf "backend-%s-%s" $link_name $i2 -}} {
-					.host = "{{getv (printf "/stacks/%s/services/%s/external_ips/%s" $stack_name $service_name $external_ip}}";
+					.host = "{{getv (printf "/stacks/%s/services/%s/external_ips/%s" $stack_name $service_name $external_ip)}}";
 					.port = "80";
 				}
 			{{- end -}}
