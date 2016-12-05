@@ -1,7 +1,6 @@
 vcl 4.0;
 import directors;
 
-
 {{- range $linked_service, $link_name := ls "/self/services/links" -}}
 	{{- $link := (split $linked_service "/") -}}
 	{{- $stack_name := index $link 0 -}}
@@ -30,19 +29,18 @@ import directors;
 
 	{{- end -}}
 
-{{- end -}}
+{{ end }}
 
 sub vcl_init {
     new vdir = directors.round_robin();
 
-{{- range $linked_service, $link_name := ls "/self/services/links" -}}
-	{{- $link := (split $linked_service "/") -}}
-	{{- $ips := lookupIP $link_name -}}
+{{ range $linked_service, $link_name := ls "/self/services/links" }}
 
-		vdir.add_backend({{- printf "backend-%s-%s" $link_name $ip -}}));
-	{{- end -}}
+	{{ range $i, $ip := lookupIP $link_name }}
+		vdir.add_backend({{ printf "backend-%s-%s" $link_name $i }}));
+	{{ end }}
 
-{{- end -}}
+{{ end }}
 }
 
 # Customised 'vcl_hit'.
