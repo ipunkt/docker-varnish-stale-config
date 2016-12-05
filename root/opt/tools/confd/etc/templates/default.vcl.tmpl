@@ -1,7 +1,11 @@
 vcl 4.0;
 import directors;
 
-{{- range $linked_service, $link_name := ls "/self/service/links" -}}
+{{- range $linked_service := ls "/self/service/links" -}}
+	{{ printf "%#v" . }}
+{{- end -}}
+
+{{- range $linked_service := ls "/self/service/linkss" -}}
 	{{- $link := (split $linked_service "/") -}}
 	{{- $stack_name := index $link 0 -}}
 	{{- $service_name := index $link 1 -}}
@@ -40,7 +44,7 @@ import directors;
 sub vcl_init {
     new vdir = directors.round_robin();
 
-{{- range $linked_service, $link_name := ls "/self/service/links" -}}
+{{- range $linked_service := ls "/self/service/linkss" -}}
 	{{- $link := (split $linked_service "/") -}}
 	{{- $stack_name := index $link 0 -}}
 	{{- $service_name := index $link 1 -}}
