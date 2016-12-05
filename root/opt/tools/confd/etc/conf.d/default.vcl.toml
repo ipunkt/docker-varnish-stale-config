@@ -5,7 +5,7 @@ owner = "varnish"
 mode = "0644"
 reload_cmd = "varnish_reload_vcl"
 keys = [
-  "/self/services/links",
+  "/self/service/links",
   "/services",
 ]
 
