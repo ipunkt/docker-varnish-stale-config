@@ -2,7 +2,7 @@ vcl 4.0;
 import directors;
 
 {{- range $linked_service := ls "/self/service/links" -}}
-	{{ printf "%#v" . }}
+	{{ printf "%s" $linked_service }}
 {{- end -}}
 
 {{- range $linked_service := ls "/self/service/linkss" -}}
