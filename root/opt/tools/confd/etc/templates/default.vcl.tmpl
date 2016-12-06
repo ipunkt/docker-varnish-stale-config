@@ -1,9 +1,55 @@
 vcl 4.0;
 import directors;
 
-{{- range $linked_service := ls "/self/service/links" -}}
-	service name: {{ printf "%s" $linked_service }}
-{{- end -}}
+{{- range $i, $stackName := ls "/self/service/links" -}}
+
+        {{- $backendPrefix := getenv "BACKEND_PREFIX" -}}
+
+        {{- range $i2, $serviceName := ls (printf "/stacks/%s/services" $stackName) -}}
+                {{- $serviceSplit := getenv "BACKEND_DIVIDER" -}}
+
+                {{- $servicePrefix := index (split $serviceName $serviceSplit) 0 -}}
+
+                {{- if eq $backendPrefix $servicePrefix -}}
+
+                        {{- $path := (printf "/stacks/%s/services/%s/containers" $stackName $serviceName) -}}
+
+                        {{- range $i3, $containerId := ls $path }}
+
+backend {{ printf "backend_%d_%d_%d" $i $i2 $i3 }} {
+        .host = "{{ getv (printf "%s/%s/primary_ip" $path $containerId) }}";
+        .port = "80";
+}
+                        {{- end -}}
+                {{ end -}}
+        {{- end -}}
+
+{{- end }}
+
+sub vcl_init {
+
+        new vdir = directors.round_robin();
+{{- range $stackIdx, $stackName := ls "/self/service/links" -}}
+
+        {{- $backendPrefix := getenv "BACKEND_PREFIX" -}}
+
+        {{- range $serviceIdx, $serviceName := ls (printf "/stacks/%s/services" $stackName) -}}
+                {{- $serviceSplit := getenv "BACKEND_DIVIDER" -}}
+
+                {{- $servicePrefix := index (split $serviceName $serviceSplit) 0 -}}
+
+                {{- if eq $backendPrefix $servicePrefix -}}
+
+                        {{- $path := (printf "/stacks/%s/services/%s/containers" $stackName $serviceName) -}}
+
+                        {{- range $containerIdx, $containerId := ls $path }}
+        vdir.add_backend( {{ printf "backend_%d_%d_%d" $stackIdx $serviceIdx $containerIdx }} );
+                        {{- end -}}
+                {{ end -}}
+        {{- end -}}
+
+{{- end }}
+}
 
 # Customised 'vcl_hit'.
 sub vcl_hit {
