@@ -85,7 +85,6 @@ sub vcl_recv {
 	
     # send all traffic to the bar director:
     set req.backend_hint = vdir.backend();
-	 set resp.http.grace = 8760h;
     unset req.http.Cache-Control;
 }
 
