@@ -1,0 +1,11 @@
+[template]
+src = "default.vcl.tmpl"
+dest = "/opt/varnish/etc/default.vcl"
+owner = "varnish"
+mode = "0644"
+reload_cmd = "varnish_reload_vcl"
+keys = [
+  "/self/service/links",
+  "/stacks",
+]
+
