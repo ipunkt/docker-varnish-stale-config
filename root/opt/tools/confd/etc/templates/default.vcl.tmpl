@@ -61,8 +61,6 @@ sub vcl_recv {
     # send all traffic to the bar director:
     set req.backend_hint = vdir.backend();
     unset req.http.Cache-Control;
-
-    return (hash);
 }
 
 sub vcl_backend_response {
@@ -71,10 +69,8 @@ sub vcl_backend_response {
     # Here you clean the response headers, removing silly Set-Cookie headers
     # and other mistakes your backend does.
 
-	if( beresp.http.www_authenticate !~ "(?i)^basic" ) {
-		set beresp.ttl = 45s;
-		set beresp.grace = 8760h;
-	}
+	set beresp.ttl = 45s;
+	set beresp.grace = 8760h;
 }
 
 sub vcl_deliver {

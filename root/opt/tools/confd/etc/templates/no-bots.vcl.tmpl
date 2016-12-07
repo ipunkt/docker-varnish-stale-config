@@ -84,19 +84,15 @@ sub vcl_recv {
 		) {
 		return (pipe);
 	}
-
-    return (hash);
 }
 
 sub vcl_backend_response {
-    # Happens after we have read the response headers from the backend.
-    #
-    # Here you clean the response headers, removing silly Set-Cookie headers
-    # and other mistakes your backend does.
-	if( beresp.http.www_authenticate !~ "(?i)^basic" ) {
-		set beresp.ttl = 45s;
-		set beresp.grace = 8760h;
-	}
+	# Happens after we have read the response headers from the backend.
+	#
+	# Here you clean the response headers, removing silly Set-Cookie headers
+	# and other mistakes your backend does.
+	set beresp.ttl = 45s;
+	set beresp.grace = 8760h;
 }
 
 sub vcl_deliver {
