@@ -53,6 +53,15 @@ sub vcl_init {
 
 # Customised 'vcl_hit'.
 sub vcl_hit {
+	return (deliver);
+}
+
+
+sub vcl_recv {
+
+    # send all traffic to the bar director:
+    set req.backend_hint = vdir.backend();
+    unset req.http.Cache-Control;
 
 	# Bots require special versions of the page, pipe them through and don't
 	# cache what they see
@@ -73,19 +82,10 @@ sub vcl_hit {
 			|| req.http.User-Agent ~ "(?i)Baidu"
 			|| req.http.User-Agent ~ "(?i)Clapp\/Mobile Kaufland"
 		) {
-		return (pass);
-
+		return (pipe);
 	}
 
-	return (deliver);
-}
-
-
-sub vcl_recv {
-
-    # send all traffic to the bar director:
-    set req.backend_hint = vdir.backend();
-    unset req.http.Cache-Control;
+    return (hash);
 }
 
 sub vcl_backend_response {

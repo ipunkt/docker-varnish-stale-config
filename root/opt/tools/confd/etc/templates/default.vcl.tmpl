@@ -57,10 +57,12 @@ sub vcl_hit {
 }
 
 sub vcl_recv {
-	
+
     # send all traffic to the bar director:
     set req.backend_hint = vdir.backend();
     unset req.http.Cache-Control;
+
+    return (hash);
 }
 
 sub vcl_backend_response {
