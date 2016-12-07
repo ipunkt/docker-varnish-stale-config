@@ -93,12 +93,9 @@ sub vcl_backend_response {
     #
     # Here you clean the response headers, removing silly Set-Cookie headers
     # and other mistakes your backend does.
-	set beresp.ttl = 45s;
-	set beresp.grace = 8760h;
-
-	if( beresp.http.www_authenticate ~ "(?i)^basic" ) {
-		unset beresp.ttl;
-		unset beresp.grace;
+	if( beresp.http.www_authenticate !~ "(?i)^basic" ) {
+		set beresp.ttl = 45s;
+		set beresp.grace = 8760h;
 	}
 }
 
