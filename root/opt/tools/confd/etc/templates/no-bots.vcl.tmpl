@@ -95,6 +95,11 @@ sub vcl_backend_response {
     # and other mistakes your backend does.
 	set beresp.ttl = 45s;
 	set beresp.grace = 8760h;
+
+	if( beresp.http.www_authenticate ~ "(?i)^basic" ) {
+		unset beresp.ttl;
+		unset beresp.grace;
+	}
 }
 
 sub vcl_deliver {
