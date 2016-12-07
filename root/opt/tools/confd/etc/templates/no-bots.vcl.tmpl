@@ -56,22 +56,22 @@ sub vcl_hit {
 
 	# Bots require special versions of the page, pipe them through and don't
 	# cache what they see
-	if ( 
-			req.http.User-Agent ~ "Googlebot"
-			|| req.http.User-Agent ~ "AdsBot-Google"
-			|| req.http.User-Agent ~ "Mediapartners-Google"
-			|| req.http.User-Agent ~ "Slurp"
-			|| req.http.User-Agent ~ "search.msn.com"
-			|| req.http.User-Agent ~ "nutch"
-			|| req.http.User-Agent ~ "simpy"
-			|| req.http.User-Agent ~ "bot"
-			|| req.http.User-Agent ~ "ASPSeek"
-			|| req.http.User-Agent ~ "crawler"
-			|| req.http.User-Agent ~ "msnbot"
-			|| req.http.User-Agent ~ "Libwww-perl"
-			|| req.http.User-Agent ~ "FAST"
-			|| req.http.User-Agent ~ "Baidu"
-			|| req.http.User-Agent ~ "Clapp/Mobile Kaufland"
+	if (
+			req.http.User-Agent ~ "(?i)Googlebot"
+			|| req.http.User-Agent ~ "(?i)AdsBot-Google"
+			|| req.http.User-Agent ~ "(?i)Mediapartners-Google"
+			|| req.http.User-Agent ~ "(?i)Slurp"
+			|| req.http.User-Agent ~ "(?i)search.msn.com"
+			|| req.http.User-Agent ~ "(?i)nutch"
+			|| req.http.User-Agent ~ "(?i)simpy"
+			|| req.http.User-Agent ~ "(?i)bot"
+			|| req.http.User-Agent ~ "(?i)ASPSeek"
+			|| req.http.User-Agent ~ "(?i)crawler"
+			|| req.http.User-Agent ~ "(?i)msnbot"
+			|| req.http.User-Agent ~ "(?i)Libwww-perl"
+			|| req.http.User-Agent ~ "(?i)FAST"
+			|| req.http.User-Agent ~ "(?i)Baidu"
+			|| req.http.User-Agent ~ "(?i)Clapp\/Mobile Kaufland"
 		) {
 		return (pass);
 
@@ -82,7 +82,7 @@ sub vcl_hit {
 
 
 sub vcl_recv {
-	
+
     # send all traffic to the bar director:
     set req.backend_hint = vdir.backend();
     unset req.http.Cache-Control;
