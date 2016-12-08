@@ -1,7 +1,7 @@
 vcl 4.0;
 import directors;
 
-{{- /* Set vcl_recv to pipe mode for known bots. Only added if the environment variable NOBOTS=true is found */ -}}
+{{/* Set vcl_recv to pipe mode for known bots. Only added if the environment variable NOBOTS=true is found */}}
 {{- define "NOBOTS" -}}
 	# Bots require special versions of the page, pipe them through and don't
 	# cache what they see
@@ -90,7 +90,7 @@ sub vcl_recv {
         {{- template "NOBOTS" -}}
     {{- end -}}
 
-	{{ /* If we want to cache authorization headers we need to return (hash) here as the builtin does a return (pass) if req.http.Authorization exists */ -}}
+	{{/* If we want to cache authorization headers we need to return (hash) here as the builtin does a return (pass) if req.http.Authorization exists */}}
 	{{- if eq (getenv "VARY_AUTH") "true" -}}
 		if ( req.http.Authorization ) {
 			return (hash);
@@ -122,7 +122,7 @@ sub vcl_deliver {
 }
 
 sub vcl_hash {
-	{{ /* If we cache responses with the authorization header it needs to be added to the hash */ -}}
+	{{/* If we cache responses with the authorization header it needs to be added to the hash */}}
 	{{- if eq (getenv "VARY_AUTH") "true" -}}
 		hash_data(req.http.Authorization);
 	{{- end }}
