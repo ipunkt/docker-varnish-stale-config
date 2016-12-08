@@ -9,6 +9,7 @@ rancher/confd giving `STACK/SERVICE` as key and confd only passes on the `STACK`
 for all services matching the links `STACK` and:
 - BACKEND_PREFIX: Name to match
 - BACKEND_DIVIDER: only up until this character is matched  
+- NOBOTS: if this is set to `true` then the bot useragent -> pass through(pipe) mode instead of cache
 
 Ex. BACKEND_PREFIX `abc`, BACKEND_DIVIDER `-`:
 - `abc-v1` would match `abc` = `abc` and create a backend for the service
@@ -23,4 +24,3 @@ there, not inside this sidekick
 
 # Created configs
 - VARNISH_CONFIG: `/opt/varnish/etc/default.vcl` - 1 year grace  
-  Alternative: `/opt/varnish/etc/no-bots.vcl` - `default.vcl` + switches to pass-through mode for bot crawler
