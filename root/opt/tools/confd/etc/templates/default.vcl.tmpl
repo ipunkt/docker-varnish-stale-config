@@ -1,6 +1,30 @@
 vcl 4.0;
 import directors;
 
+{{- /* Set vcl_recv to pipe mode for known bots. Only added if the environment variable NOBOTS=true is found */ -}}
+{{- define "NOBOTS" -}}
+	# Bots require special versions of the page, pipe them through and don't
+	# cache what they see
+	if (
+			req.http.User-Agent ~ "(?i)Googlebot"
+			|| req.http.User-Agent ~ "(?i)AdsBot-Google"
+			|| req.http.User-Agent ~ "(?i)Mediapartners-Google"
+			|| req.http.User-Agent ~ "(?i)Slurp"
+			|| req.http.User-Agent ~ "(?i)search.msn.com"
+			|| req.http.User-Agent ~ "(?i)nutch"
+			|| req.http.User-Agent ~ "(?i)simpy"
+			|| req.http.User-Agent ~ "(?i)ASPSeek"
+			|| req.http.User-Agent ~ "(?i)crawler"
+			|| req.http.User-Agent ~ "(?i)msnbot"
+			|| req.http.User-Agent ~ "(?i)Libwww-perl"
+			|| req.http.User-Agent ~ "(?i)FAST"
+			|| req.http.User-Agent ~ "(?i)Baidu"
+			|| req.http.User-Agent ~ "(?i)Clapp\/Mobile Kaufland"
+		) {
+		return (pipe);
+	}
+{{- end -}}
+
 {{- range $i, $stackName := ls "/self/service/links" -}}
 
         {{- $backendPrefix := getenv "BACKEND_PREFIX" -}}
@@ -61,6 +85,10 @@ sub vcl_recv {
     # send all traffic to the bar director:
     set req.backend_hint = vdir.backend();
     unset req.http.Cache-Control;
+
+    {{- if eq (getenv "NOBOTS") "true" -}}
+        {{- template "NOBOTS" -}}
+    {{- end -}}
 }
 
 sub vcl_backend_response {
