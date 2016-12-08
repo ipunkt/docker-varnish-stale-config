@@ -19,8 +19,8 @@ Ex. BACKEND_PREFIX `abc`, BACKEND_DIVIDER `-`:
 You must make `/opt/tools` a volume in your container for this image to work.  
 The actual content is unpacked into `/opt/tools` when the container is run
 
-The options `BACKEND_PREFIX` and `BACKEND_DIVIDER` must be set in the `rancher-tools` image because the confd is run
-there, not inside this sidekick
+Because confd is run in the rancher-tools container and not in this sidekick container all options MUST be set in the
+rancher-tools container
 
 # Created configs
 - VARNISH_CONFIG: `/opt/varnish/etc/default.vcl` - 1 year grace  
