@@ -91,7 +91,7 @@ sub vcl_recv {
     {{- end -}}
 
 	{{ /* If we want to cache authorization headers we need to return (hash) here as the builtin does a return (pass) if req.http.Authorization exists */ -}}
-	{{- if eq (getenv "VARY-AUTH") "true" -}}
+	{{- if eq (getenv "VARY_AUTH") "true" -}}
 		if ( req.http.Authorization ) {
 			return (hash);
 		}
@@ -123,7 +123,7 @@ sub vcl_deliver {
 
 sub vcl_hash {
 	{{ /* If we cache responses with the authorization header it needs to be added to the hash */ -}}
-	{{- if eq (getenv "VARY-AUTH") "true" -}}
+	{{- if eq (getenv "VARY_AUTH") "true" -}}
 		hash_data(req.http.Authorization);
 	{{- end }}
 
