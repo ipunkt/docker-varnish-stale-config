@@ -98,6 +98,16 @@ sub vcl_recv {
 	{{- end }}
 }
 
+sub vcl_backend_fetch {
+	{{/* If we want to cache authorization headers we need to return (hash) here as the builtin does a return (pass) if req.http.Authorization exists */}}
+	{{ if eq (getenv "X_BUSTER") "true" -}}
+		set bereq.http.X-Buster = "true";
+	{{- end }}
+	{{ if eq (getenv "X_REFRESH") "true" -}}
+		set bereq.http.X-Refresh = "true";
+	{{- end }}
+}
+
 sub vcl_backend_response {
     # Happens after we have read the response headers from the backend.
     #
