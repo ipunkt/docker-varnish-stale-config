@@ -10,6 +10,10 @@ for all services matching the links `STACK` and:
 - BACKEND_PREFIX: Name to match
 - BACKEND_DIVIDER: only up until this character is matched  
 - NOBOTS: if this is set to `true` then the bot useragent -> pass through(pipe) mode instead of cache
+- VARY_AUTH: If this is set to `true` then caching will take place despite an authorization header being sent. Responses
+  will vary based on the authorization header.  
+  This is ment for staging environments with basic auth protection.
+- IGNORE_COOKIES: If this is set to `true` then caching will take place despite cookies. Responses are NOT varied by cookie  
 
 Ex. BACKEND_PREFIX `abc`, BACKEND_DIVIDER `-`:
 - `abc-v1` would match `abc` = `abc` and create a backend for the service

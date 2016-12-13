@@ -90,12 +90,44 @@ sub vcl_recv {
         {{- template "NOBOTS" -}}
     {{- end -}}
 
-	{{/* If we want to cache authorization headers we need to return (hash) here as the builtin does a return (pass) if req.http.Authorization exists */}}
-	{{- if eq (getenv "VARY_AUTH") "true" -}}
-		if ( req.http.Authorization ) {
-			return (hash);
-		}
+	/* Copied from builtin.vcl */
+	 if (req.method == "PRI") {
+		/* We do not support SPDY or HTTP/2.0 */
+		return (synth(405));
+    }
+    if (req.method != "GET" &&
+      req.method != "HEAD" &&
+      req.method != "PUT" &&
+      req.method != "POST" &&
+      req.method != "TRACE" &&
+      req.method != "OPTIONS" &&
+      req.method != "DELETE" &&
+      req.method != "PATCH") {
+        /* Non-RFC2616 or CONNECT which is weird. */
+        return (pipe);
+    }
+
+    if (req.method != "GET" && req.method != "HEAD") {
+        /* We only deal with GET and HEAD by default */
+        return (pass);
+    }
+
+	{{/* Only add the "passthrough mode for authorization" part of builtin.vcl if VARY_AUTH is not set to true */}}
+	{{- if ne (getenv "VARY_AUTH") "true" -}}
+    if (req.http.Authorization) {
+        /* Not cacheable by default */
+        return (pass);
+    }
 	{{- end }}
+
+	{{/* Only add the "passthrough mode if cookies are sent" part of builtin.vcl if IGNORE_COOKIES is not set to true */}}
+	{{- if ne (getenv "IGNORE_COOKIES") "true" -}}
+    if (req.http.Cookie) {
+        /* Not cacheable by default */
+        return (pass);
+    }
+	{{- end }}
+	return (hash);
 }
 
 sub vcl_backend_fetch {
