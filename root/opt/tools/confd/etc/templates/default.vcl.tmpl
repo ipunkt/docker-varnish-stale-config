@@ -25,10 +25,6 @@ import directors;
 	}
 {{- end -}}
 
-{{- define "IGNORE_QUERYSTRING" -}}
-	set req.url = querystring.remove(req.url);
-{{- end -}}
-
 {{- range $i, $stackName := ls "/self/service/links" -}}
 
         {{- $backendPrefix := getenv "BACKEND_PREFIX" -}}
@@ -89,10 +85,6 @@ sub vcl_recv {
     # send all traffic to the bar director:
     set req.backend_hint = vdir.backend();
     unset req.http.Cache-Control;
-
-    {{- if eq (getenv "IGNORE_QUERYSTRING") "true" -}}
-        {{- template "IGNORE_QUERYSTRING" -}}
-    {{- end -}}
 
     {{- if eq (getenv "NOBOTS") "true" -}}
         {{- template "NOBOTS" -}}
