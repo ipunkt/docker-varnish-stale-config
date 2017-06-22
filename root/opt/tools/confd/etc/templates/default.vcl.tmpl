@@ -25,6 +25,10 @@ import directors;
 	}
 {{- end -}}
 
+{{- define "IGNORE_QUERYSTRING" -}}
+	set req.url = querystring.remove(req.url);
+{{- end -}}
+
 {{- range $i, $stackName := ls "/self/service/links" -}}
 
         {{- $backendPrefix := getenv "BACKEND_PREFIX" -}}
@@ -85,6 +89,10 @@ sub vcl_recv {
     # send all traffic to the bar director:
     set req.backend_hint = vdir.backend();
     unset req.http.Cache-Control;
+
+    {{- if eq (getenv "IGNORE_QUERYSTRING") "true" -}}
+        {{- template "IGNORE_QUERYSTRING" -}}
+    {{- end -}}
 
     {{- if eq (getenv "NOBOTS") "true" -}}
         {{- template "NOBOTS" -}}
@@ -163,11 +171,32 @@ sub vcl_deliver {
 	 }
 }
 
+{{/* Import querystring if we ignore the querystring  */}}
+{{- if eq (getenv "IGNORE_QUERYSTRING") "true" -}}
+import querystring;
+{{- end }}
+
 sub vcl_hash {
+
 	{{/* If we cache responses with the authorization header it needs to be added to the hash */}}
 	{{- if eq (getenv "VARY_AUTH") "true" -}}
 		hash_data(req.http.Authorization);
 	{{- end }}
 
     hash_data(req.http.method);
+
+	{{/* Ignore querystring if set */}}
+	{{- if eq (getenv "IGNORE_QUERYSTRING") "true" -}}
+
+	if (req.method == "GET" || req.method == "HEAD") {
+		hash_data(querystring.remove(req.url));
+		if (req.http.host) {
+			hash_data(req.http.host);
+		} else {
+			hash_data(server.ip);
+		}
+		return (lookup);
+	}
+
+	{{- end }}
 }
