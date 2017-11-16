@@ -30,7 +30,7 @@ backend default {
 	.host = "backend";
 	.port = "80";
 }
-{{- else -}}
+{{ else -}}
 	{{- range $i, $stackName := ls "/self/service/links" -}}
 
 			  {{- $backendPrefix := getenv "BACKEND_PREFIX" -}}
@@ -55,7 +55,7 @@ backend default {
 			  {{- end -}}
 
 	{{- end }}
-{{- end -}}
+{{ end -}}
 
 sub vcl_init {
 

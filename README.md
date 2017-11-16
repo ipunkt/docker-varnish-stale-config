@@ -7,15 +7,17 @@ The configuration currently uses a round-robin director to add all backends.
 The backends are generated from the services links. However in rancher 1.2.0-pre3 there is a bug in
 rancher/confd giving `STACK/SERVICE` as key and confd only passes on the `STACK` part. Thus the config is generated
 for all services matching the links `STACK` and:
-- BACKEND_PREFIX: Name to match
-- BACKEND_DIVIDER: only up until this character is matched  
+- BACKEND\_PREFIX: Name to match
+- BACKEND\_DIVIDER: only up until this character is matched  
 - NOBOTS: if this is set to `true` then the bot useragent -> pass through(pipe) mode instead of cache
-- VARY_AUTH: If this is set to `true` then caching will take place despite an authorization header being sent. Responses
+- VARY\_AUTH: If this is set to `true` then caching will take place despite an authorization header being sent. Responses
   will vary based on the authorization header.  
   This is ment for staging environments with basic auth protection.
-- IGNORE_COOKIES: If this is set to `true` then caching will take place despite cookies. Responses are NOT varied by cookie  
+- IGNORE\_COOKIES: If this is set to `true` then caching will take place despite cookies. Responses are NOT varied by cookie  
+- SIMPLE\_BACKEND: If this is set to `true` then varnish will simply use the
+  hostname `backend` as its backend.
 
-Ex. BACKEND_PREFIX `abc`, BACKEND_DIVIDER `-`:
+Ex. BACKEND\_PREFIX `abc`, BACKEND_DIVIDER `-`:
 - `abc-v1` would match `abc` = `abc` and create a backend for the service
 - `abcd-v1` would match `abcd` != `abc` and discard the service
 
