@@ -89,8 +89,13 @@ sub vcl_hit {
 
 sub vcl_recv {
 
+{{- if eq (getenv "SIMPLE_BACKEND") "true" -}}
+    set req.backend_hint = default;
+{{- else -}}
     # send all traffic to the bar director:
     set req.backend_hint = vdir.backend();
+{{- end -}}
+
     unset req.http.Cache-Control;
 
     {{- if eq (getenv "NOBOTS") "true" -}}
