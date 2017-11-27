@@ -195,8 +195,8 @@ sub vcl_hash {
 	{{- if eq (getenv "IGNORE_QUERYSTRING") "true" -}}
 
 		{{- if ne (getenv "IGNORE_QUERYSTRING_EXCLUDE") "" -}}
-			{{ range (split (getenv "IGNORE_QUERYSTRING_EXCLUDE") "~") }}
-				if (req.url ~ "{{ .Value }}") {
+			{{ range $index, $element := (split (getenv "IGNORE_QUERYSTRING_EXCLUDE") "~") }}
+				if (req.url ~ "{{ $element }}") {
 					var.set_int("excluded", 1);
 				}
 			{{ end }}
