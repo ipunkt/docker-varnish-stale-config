@@ -190,9 +190,18 @@ sub vcl_hash {
     hash_data(req.http.method);
 
 	{{/* Ignore querystring if set */}}
+	set req.http.queryignore_excluded = "0";
 	{{- if eq (getenv "IGNORE_QUERYSTRING") "true" -}}
 
-	if (req.method == "GET" || req.method == "HEAD") {
+		{{- if ne (getenv "IGNORE_QUERYSTRING_EXCLUDE") "" -}}
+			{{ range $index, $element := (split (getenv "IGNORE_QUERYSTRING_EXCLUDE") "~") }}
+				if (req.url ~ "{{ $element }}") {
+					set req.http.queryignore_excluded = "1";
+				}
+			{{ end }}
+		{{ end }}
+
+	if ( (req.method == "GET" || req.method == "HEAD") && (req.http.queryignore_excluded == "0") ) {
 		hash_data(querystring.remove(req.url));
 		if (req.http.host) {
 			hash_data(req.http.host);
