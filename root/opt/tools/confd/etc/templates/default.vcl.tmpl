@@ -178,6 +178,7 @@ sub vcl_deliver {
 {{/* Import querystring if we ignore the querystring  */}}
 {{- if eq (getenv "IGNORE_QUERYSTRING") "true" -}}
 import querystring;
+import var;
 {{- end }}
 
 sub vcl_hash {
@@ -190,9 +191,18 @@ sub vcl_hash {
     hash_data(req.http.method);
 
 	{{/* Ignore querystring if set */}}
+	var.set_int("excluded", 0);
 	{{- if eq (getenv "IGNORE_QUERYSTRING") "true" -}}
 
-	if (req.method == "GET" || req.method == "HEAD") {
+		{{- if ne (getenv "IGNORE_QUERYSTRING_EXCLUDE") "" -}}
+			{{ range (split (getenv "IGNORE_QUERYSTRING_EXCLUDE") "~") }}
+				if (req.url ~ "{{ .Value }}") {
+					var.set_int("excluded", 1);
+				}
+			{{ end }}
+		{{ end }}
+
+	if ( (req.method == "GET" || req.method == "HEAD") && (var.get_int("excluded") == 0) ) {
 		hash_data(querystring.remove(req.url));
 		if (req.http.host) {
 			hash_data(req.http.host);

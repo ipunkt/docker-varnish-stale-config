@@ -16,6 +16,7 @@ for all services matching the links `STACK` and:
 - IGNORE\_COOKIES: If this is set to `true` then caching will take place despite cookies. Responses are NOT varied by cookie  
 - SIMPLE\_BACKEND: If this is set to `true` then varnish will simply use the
   hostname `backend` as its backend.
+- IGNORE_QUERYSTRING_EXCLUDE: List of regexes separated by `~`. If any of them matches then the url will not ignore querystrings
 
 Ex. BACKEND\_PREFIX `abc`, BACKEND_DIVIDER `-`:
 - `abc-v1` would match `abc` = `abc` and create a backend for the service
