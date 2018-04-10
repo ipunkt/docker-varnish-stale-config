@@ -76,7 +76,9 @@ sub vcl_init {
                         {{- $path := (printf "/stacks/%s/services/%s/containers" $stackName $serviceName) -}}
 
                         {{- range $containerIdx, $containerId := ls $path }}
+							{{ if ne ( getv (printf "%s/%s/primary_ip" $path $containerId) ) "null" }}
         vdir.add_backend( {{ printf "backend_%d_%d_%d" $stackIdx $serviceIdx $containerIdx }} );
+							{{- end -}}
                         {{- end -}}
                 {{ end -}}
         {{- end -}}
