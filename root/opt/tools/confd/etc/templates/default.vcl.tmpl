@@ -46,7 +46,7 @@ backend default {
 
 									{{- range $i3, $containerId := ls $path }}
 
-	{{ if ( ne ( getv (printf "%s/%s/primary_ip" $path $containerId) ) "null" }}
+	{{ if ne ( getv (printf "%s/%s/primary_ip" $path $containerId) ) "null" }}
 	backend {{ printf "backend_%d_%d_%d" $i $i2 $i3 }} {
 			  .host = "{{ getv (printf "%s/%s/primary_ip" $path $containerId) }}";
 			  .port = "80";
