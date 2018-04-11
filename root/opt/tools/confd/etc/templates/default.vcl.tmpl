@@ -29,6 +29,7 @@ import directors;
 backend default {
 	.host = "backend";
 	.port = "80";
+
 }
 {{ else -}}
 	{{- range $i, $stackName := ls "/self/service/links" -}}
@@ -50,6 +51,13 @@ backend default {
 	backend {{ printf "backend_%d_%d_%d" $i $i2 $i3 }} {
 			  .host = "{{ getv (printf "%s/%s/primary_ip" $path $containerId) }}";
 			  .port = "80";
+			  .probe = {
+				.url = "/";
+				.timeout = 1s;
+				.interval = 5s;
+				.window = 5;
+				.threshold = 3;
+				}
 	}
 	{{- end -}}
 									{{- end -}}
