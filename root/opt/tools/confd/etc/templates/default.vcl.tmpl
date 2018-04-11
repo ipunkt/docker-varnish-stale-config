@@ -49,8 +49,7 @@ backend default {
 									{{- range $i3, $containerId := ls $path }}
 
 	{{ if ne ( getv (printf "%s/%s/primary_ip" $path $containerId) ) "null" }}
-	Primary Service: {{ getv $primaryService }}
-	Container Name: {{ getv (printf "%s/%s/service_name" $path $containerId) }}
+	{{ if eq (getv $primaryService) (getv (printf "%s/%s/service_name" $path $containerId)) }}
 	backend {{ printf "backend_%d_%d_%d" $i $i2 $i3 }} {
 			  .host = "{{ getv (printf "%s/%s/primary_ip" $path $containerId) }}";
 			  .port = "80";
@@ -62,6 +61,7 @@ backend default {
 				.threshold = 3;
 				}
 	}
+	{{- end -}}
 	{{- end -}}
 									{{- end -}}
 						 {{ end -}}
