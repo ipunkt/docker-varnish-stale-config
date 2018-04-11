@@ -60,7 +60,7 @@ backend default {
 				.window = 5;
 				.threshold = 3;
 				{{ if ne (getenv "EXPECTED_RESPONSE") "" }}
-				.expected_response {{ getenv "EXPECTED_RESPONSE" }};
+				.expected_response "{{ getenv "EXPECTED_RESPONSE" }}";
 				{{ end  }}
 				}
 	}
