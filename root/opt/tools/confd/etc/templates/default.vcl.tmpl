@@ -53,16 +53,22 @@ backend default {
 	backend {{ printf "backend_%d_%d_%d" $i $i2 $i3 }} {
 			  .host = "{{ getv (printf "%s/%s/primary_ip" $path $containerId) }}";
 			  .port = "80";
-			  .probe = {
-				.url = "/";
-				.timeout = 1s;
-				.interval = 5s;
-				.window = 5;
-				.threshold = 3;
-				{{ if ne (getenv "EXPECTED_RESPONSE") "" }}
-				.expected_response = {{ getenv "EXPECTED_RESPONSE" }};
+				{{ if eq (getenv "HEALTHCHECK") "true" }}
+				  .probe = {
+					{{ if ne (getenv "HEALTHCHECK_URL") "" }}
+						.url = "{{ getenv "HEALTHCHECK_URL" }}";
+					{{ else  }}
+						.url = "/";
+					{{ end  }}
+					.timeout = 1s;
+					.interval = 5s;
+					.window = 5;
+					.threshold = 3;
+					{{ if ne (getenv "EXPECTED_RESPONSE") "" }}
+						.expected_response = {{ getenv "EXPECTED_RESPONSE" }};
+					{{ end  }}
+					}
 				{{ end  }}
-				}
 	}
 	{{- end -}}
 	{{- end -}}
