@@ -235,8 +235,10 @@ sub vcl_hash {
 		} else {
 			hash_data(server.ip);
 		}
+		unset req.http.queryignore_excluded;
 		return (lookup);
 	}
 
 	{{- end }}
+	unset req.http.queryignore_excluded;
 }
